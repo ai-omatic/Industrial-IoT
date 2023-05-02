@@ -50,6 +50,18 @@
  .PARAMETER aadApplicationName
     The application name to use when registering aad application. If not set, uses applicationName.
 
+ .PARAMETER containerRegistryServer
+    The container registry server to use to pull images
+
+ .PARAMETER containerRegistryUsername
+    The user name to use to pull images
+
+ .PARAMETER containerRegistryPassword
+    The password to use to pull images
+
+ .PARAMETER imageNamespace
+    Override the automatically determined namespace of the container images
+
  .PARAMETER acrRegistryName
     An optional name of an Azure container registry to deploy containers from.
 
@@ -99,6 +111,10 @@ param(
     [string] $tenantId,
     [string] $authTenantId,
     [string] $aadApplicationName,
+    [string] $containerRegistryServer,
+    [string] $containerRegistryUsername,
+    [securestring] $containerRegistryPassword,
+    [string] $imageNamespace,
     [string] $acrRegistryName,
     [string] $acrSubscriptionName,
     [string] $acrTenantId,
@@ -761,54 +777,71 @@ Function New-Deployment() {
     if (-not (($script:type -eq "local") -or ($script:type -eq "minimum"))) {
 
         $namespace = ""
-        if ($script:acrSubscriptionName -eq "IOT_GERMANY") {
-            if (($script:acrRegistryName -eq "industrialiot") -or `
-                ($script:acrRegistryName -eq "industrialiotprod")) {
-                $namespace = "public"
-            }
-            elseif ($script:acrRegistryName -eq "industrialiotdev") {
-                $namespace = $script:branchName
-                if ($script:branchName.StartsWith("feature/")) {
-                    $namespace = $namespace.Replace("feature/", "")
-                }
-                $namespace = $namespace.Replace("_", "/").Substring(0, [Math]::Min($namespace.Length, 24))
-            }
-        }
-	    
-        # Try and get registry credentials
-        try {
-            $creds = Select-RegistryCredentials
-        }
-        catch {
-            Write-Warning $_.Exception.Message
-            $creds = $null
-        }
-
-        if ([string]::IsNullOrEmpty($script:version)) {
-            if ($script:branchName.StartsWith("release/")) {
-                $script:version = $script:branchName.Replace("release/", "")
-            }
-            else {
-                $script:version = "latest"
-            }
-        }
-
-        # Configure registry
-        if ($creds) {
-            $templateParameters.Add("dockerServer", $creds.dockerServer)
-            $templateParameters.Add("dockerUser", $creds.dockerUser)
-            $templateParameters.Add("dockerPassword", $creds.dockerPassword)
-	        $templateParameters.Add("imagesNamespace", $namespace)
-            Write-Host "Using $($script:version) $($namespace) images from private registry $($creds.dockerServer)."
-        }
-        elseif ([string]::IsNullOrEmpty($script:acrRegistryName)) {
-            $templateParameters.Add("dockerServer", "mcr.microsoft.com")
-            Write-Host "Using released $($script:version) images from mcr.microsoft.com."
+        if (-not [string]::IsNullOrEmpty($script:imageNamespace)) {
+            $namespace = $script:imageNamespace
         }
         else {
-            $templateParameters.Add("dockerServer", "$($script:acrRegistryName).azurecr.io")
-	        $templateParameters.Add("imagesNamespace", $namespace)
-            Write-Host "Using $($script:version) $($namespace) images from $($script:acrRegistryName).azurecr.io."
+            if ($script:acrSubscriptionName -eq "IOT_GERMANY") {
+                if (($script:acrRegistryName -eq "industrialiot") -or `
+                    ($script:acrRegistryName -eq "industrialiotprod")) {
+                    $namespace = "public"
+                }
+                elseif ($script:acrRegistryName -eq "industrialiotdev") {
+                    $namespace = $script:branchName
+                    if ($script:branchName.StartsWith("feature/")) {
+                        $namespace = $namespace.Replace("feature/", "")
+                    }
+                    $namespace = $namespace.Replace("_", "/").Substring(0, [Math]::Min($namespace.Length, 24))
+                }
+            }
+        }
+
+        if ([string]::IsNullOrEmpty($script:containerRegistryServer)) {
+            # Try and get registry credentials
+            try {
+                $creds = Select-RegistryCredentials
+            }
+            catch {
+                Write-Warning $_.Exception.Message
+                $creds = $null
+            }
+
+            if ([string]::IsNullOrEmpty($script:version)) {
+                if ($script:branchName.StartsWith("release/")) {
+                    $script:version = $script:branchName.Replace("release/", "")
+                }
+                else {
+                    $script:version = "latest"
+                }
+            }
+
+            # Configure registry
+            if ($creds) {
+                $templateParameters.Add("dockerServer", $creds.dockerServer)
+                $templateParameters.Add("dockerUser", $creds.dockerUser)
+                $templateParameters.Add("dockerPassword", $creds.dockerPassword)
+                $templateParameters.Add("imagesNamespace", $namespace)
+                Write-Host "Using $($script:version) $($namespace) images from private registry $($creds.dockerServer)."
+            }
+            elseif ([string]::IsNullOrEmpty($script:acrRegistryName)) {
+                $templateParameters.Add("dockerServer", "mcr.microsoft.com")
+                Write-Host "Using released $($script:version) images from mcr.microsoft.com."
+            }
+            else {
+                $templateParameters.Add("dockerServer", "$($script:acrRegistryName).azurecr.io")
+                $templateParameters.Add("imagesNamespace", $namespace)
+                Write-Host "Using $($script:version) $($namespace) images from $($script:acrRegistryName).azurecr.io."
+            }
+        }
+        else {
+            Write-Host "Using $($script:version) $($namespace) images from private registry $($script:containerRegistryServer)."
+            $templateParameters.Add("dockerServer", $script:containerRegistryServer)
+            $templateParameters.Add("imagesNamespace", $namespace)
+            if (-not [string]::IsNullOrEmpty($script:containerRegistryUsername)) {
+                $templateParameters.Add("dockerUser", $script:containerRegistryUsername)
+                $plainTextPassword = [Net.NetworkCredential]::new('', $script:containerRegistryPassword).Password
+                $templateParameters.Add("dockerPassword", $plainTextPassword)
+            }
         }
         $templateParameters.Add("imagesTag", $script:version)
     }
