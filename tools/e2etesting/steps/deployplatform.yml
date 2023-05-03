@@ -50,9 +50,15 @@ steps:
     Inline: |
       $secureContainerRegistryPassword = "$(ContainerRegistryPassword)" `
         | ConvertTo-SecureString -AsPlainText -Force
+      $secureServicePrincipalSecret = "$(ServicePrincipalKey)" `
+        | ConvertTo-SecureString -AsPlainText -Force
+      $credentials = New-Object -TypeName System.Management.Automation.PSCredential `
+        -ArgumentList "$(ServicePrincipalId)", $secureServicePrincipalSecret
       Write-Host "Deploying to '$(ResourceGroupName)'..."
       . $(System.DefaultWorkingDirectory)/deploy/scripts/deploy.ps1 `
           -type services `
+          -credentials $credentials
+          -isServicePrincipal
           -version "$(PlatformVersion)" `
           -applicationName "$(ApplicationName)" `
           -resourceGroupName "$(ResourceGroupName)" `

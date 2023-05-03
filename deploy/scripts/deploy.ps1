@@ -95,6 +95,13 @@
     Virtual machine SKU size that hosts simulated OPC UA PLC.
     Suggestion: use VM with at least 1 core and 2 GB of memory.
     Must Support Generation 1.
+
+ .PARAMETER credentials
+    Use these credentials to log in. If not provided you are 
+    prompted to provide credentials
+
+ .PARAMETER isServicePrincipal
+    The credentials provided are service principal credentials.
 #>
 
 param(
@@ -124,6 +131,8 @@ param(
     [int] $numberOfLinuxGateways = 1,
     [int] $numberOfWindowsGateways = 1,
     [int] $numberOfSimulationsPerEdge = 1,
+    [pscredential] $credentials,
+    [switch] $isServicePrincipal,
     $aadConfig,
     $context = $null,
     [switch] $testAllDeploymentOptions,
@@ -169,9 +178,18 @@ Function Select-Context() {
     }
     if (!$context) {
         try {
-            Write-Host "Signing into $($environment.Name) ..."
-            $connection = Connect-AzAccount -Environment $environment.Name `
-                -SkipContextPopulation @tenantArg -ErrorAction Stop 
+            if ($script:credentials) {
+Write-Host "Signing into $($environment.Name) using the provided credentials..."
+                $connection = Connect-AzAccount -Environment $environment.Name `
+                    -Credential $script:credentials `
+                    -ServicePrincipal:$script:isServicePrincipal.IsPresent `
+                    -SkipContextPopulation @tenantArg -ErrorAction Stop
+            }
+            else {
+                Write-Host "Signing into $($environment.Name) ..."
+                $connection = Connect-AzAccount -Environment $environment.Name `
+                    -SkipContextPopulation @tenantArg -ErrorAction Stop
+            }
             Write-Host "Signed in."
             Write-Host
             $context = $connection.Context
