@@ -1012,8 +1012,7 @@ Write-Warning "Standard_D4s_v4 VM with Nested virtualization for IoT Edge Eflow 
         }
 
         $script:aadConfig = & (Join-Path $script:ScriptDir "aad-register.ps1") `
-            -Context $aadRegisterContext -Name $script:aadApplicationName `
-            -Credentials $script:credentials
+            -Context $aadRegisterContext -Name $script:aadApplicationName
 
         Write-Host "Client and services AAD applications registered..."
         Write-Host
