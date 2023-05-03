@@ -170,57 +170,63 @@ Function Select-Context() {
         }
     }
 
-    $rootDir = Get-RootFolder $script:ScriptDir
-    $contextFile = Join-Path $rootDir ".user"
-    if (!$context) {
-        # Migrate .user file into root (next to .env)
-        if (!(Test-Path $contextFile)) {
-            $oldFile = Join-Path $script:ScriptDir ".user"
-            if (Test-Path $oldFile) {
-                Move-Item -Path $oldFile -Destination $contextFile
+    if ($context) {
+        Write-Host "Using provided context $($context)..."
+    }
+    else {
+        $rootDir = Get-RootFolder $script:ScriptDir
+        $contextFile = Join-Path $rootDir ".user"
+        if (!$context) {
+            # Migrate .user file into root (next to .env)
+            if (!(Test-Path $contextFile)) {
+                $oldFile = Join-Path $script:ScriptDir ".user"
+                if (Test-Path $oldFile) {
+                    Move-Item -Path $oldFile -Destination $contextFile
+                }
+            }
+            if (Test-Path $contextFile) {
+                $connection = Import-AzContext -Path $contextFile
+                if (($null -ne $connection) `
+                        -and ($null -ne $connection.Context) `
+                        -and ($null -ne (Get-AzSubscription))) {
+                    $context = $connection.Context
+                }
             }
         }
-        if (Test-Path $contextFile) {
-            $connection = Import-AzContext -Path $contextFile
-            if (($null -ne $connection) `
-                    -and ($null -ne $connection.Context) `
-                    -and ($null -ne (Get-AzSubscription))) {
+        if (!$context) {
+            try {
+                if ($script:credentials) {
+                    Write-Host "Signing into $($environment.Name) using the provided credentials..."
+                    $connection = Connect-AzAccount -Environment $environment.Name `
+                        -Credential $script:credentials `
+                        -ServicePrincipal:$script:isServicePrincipal.IsPresent `
+                        -SkipContextPopulation @tenantArg -ErrorAction Stop
+                }
+                else {
+                    Write-Host "Signing into $($environment.Name) ..."
+                    $connection = Connect-AzAccount -Environment $environment.Name `
+                        -SkipContextPopulation @tenantArg -ErrorAction Stop
+                }
+                Write-Host "Signed in."
+                Write-Host
                 $context = $connection.Context
             }
+            catch {
+                $connection | Out-Host
+                $context = Get-AzContext
+                if ($context) {
+                    Write-Host "Failed to log in. Using existing context $($context)..."
+                    Write-Host
+                }
+            }
         }
-    }
-    if (!$context) {
-        try {
-            if ($script:credentials) {
-                Write-Host "Signing into $($environment.Name) using the provided credentials..."
-                $connection = Connect-AzAccount -Environment $environment.Name `
-                    -Credential $script:credentials `
-                    -ServicePrincipal:$script:isServicePrincipal.IsPresent `
-                    -SkipContextPopulation @tenantArg -ErrorAction Stop
-            }
-            else {
-                Write-Host "Signing into $($environment.Name) ..."
-                $connection = Connect-AzAccount -Environment $environment.Name `
-                    -SkipContextPopulation @tenantArg -ErrorAction Stop
-            }
-            Write-Host "Signed in."
-            Write-Host
-            $context = $connection.Context
-        }
-        catch {
-            $connection | Out-Host
-            $context = Get-AzContext
-            if ($context) {
-                Write-Host "Failed to log in. Using existing context $($context)..."
-                Write-Host
-            }
+
+        if (!$context) {
+            throw "The login to the Azure account was not successful."
         }
     }
 
-    if (!$context) {
-        throw "The login to the Azure account was not successful."
-    }
-
+    $tenantIdArg = @{}
     if (![string]::IsNullOrEmpty($script:tenantId)) {
         $tenantIdArg = @{
             TenantId = $script:tenantId
