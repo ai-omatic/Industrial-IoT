@@ -129,7 +129,7 @@
             "comments": "Hosting plan to host platform services and application.",
             "type": "Microsoft.Web/serverfarms",
             "apiVersion": "2018-02-01",
-            "kind": "[if(parameters('deployFromSource'), 'app', 'linux')]",
+            "kind": "linux",
             "name": "[parameters('hostingPlanName')]",
             "location": "[resourceGroup().location]",
             "tags": "[parameters('tags')]",

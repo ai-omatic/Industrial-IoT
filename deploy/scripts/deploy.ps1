@@ -174,6 +174,7 @@ Function Select-Context() {
     $contextFile = Join-Path $rootDir ".user"
     if ($context) {
         Write-Host "Using provided context $($context)..."
+        $script:subscriptionId = $context.Subscription.Id
     }
     else {
         if (!$context) {

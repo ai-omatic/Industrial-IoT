@@ -240,7 +240,7 @@ Function New-ADApplications() {
                 $creds = Connect-AzureADAlias `
                     -AzureEnvironmentName $context.Environment.Name `
                     -TenantId $tenantId `
-                }
+            }
             catch {
                 Write-Host "Failed collecting user credentials while registering $($applicationDisplayName): $($_.Exception.Message)"
             }
