@@ -147,8 +147,8 @@ param(
     [int] $numberOfSimulationsPerEdge = 1,
     [pscredential] $credentials,
     [switch] $isServicePrincipal,
-    $aadConfig,
-    $context = $null,
+    [object] $aadConfig,
+    [object] $context,
     [string] $environmentName = "AzureCloud"
 )
 
@@ -208,8 +208,17 @@ Function Select-Context() {
             $context = $connection.Context
         }
         catch {
-            throw "The login to the Azure account was not successful."
+            $connection | Out-Host
+            $context = Get-AzContext
+            if ($context) {
+                Write-Host "Failed to log in. Using existing context $($context)..."
+                Write-Host
+            }
         }
+    }
+
+    if (!$context) {
+        throw "The login to the Azure account was not successful."
     }
 
     if (![string]::IsNullOrEmpty($script:tenantId)) {

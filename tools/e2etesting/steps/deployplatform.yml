@@ -50,10 +50,12 @@ steps:
     Inline: |
       $secureContainerRegistryPassword = "$(ContainerRegistryPassword)" `
         | ConvertTo-SecureString -AsPlainText -Force
+      Get-AzContext -ListAvailable
+      $context = Get-AzContext
+      $context | Out-Host
       Write-Host "Deploying to '$(ResourceGroupName)'..."
       . $(System.DefaultWorkingDirectory)/deploy/scripts/deploy.ps1 `
           -type services `
-          -context $(Get-AzContext) `
           -version "$(PlatformVersion)" `
           -applicationName "$(ApplicationName)" `
           -resourceGroupName "$(ResourceGroupName)" `
@@ -61,7 +63,8 @@ steps:
           -imageNamespace "$(ImageNamespace)" `
           -containerRegistryServer "$(ContainerRegistryServer)" `
           -containerRegistryUsername "$(ContainerRegistryUsername)" `
-          -containerRegistryPassword $secureContainerRegistryPassword
+          -containerRegistryPassword $secureContainerRegistryPassword `
+          -context $context
       Write-Host "Finished deployment to '$(ResourceGroupName)'."
 
 - task: AzurePowerShell@5
