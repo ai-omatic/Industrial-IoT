@@ -33,14 +33,8 @@ param(
 Function Select-Context() {
     [OutputType([Microsoft.Azure.Commands.Profile.Models.Core.PSAzureContext])]
     Param(
-        [string] $environmentName,
-        [Microsoft.Azure.Commands.Profile.Models.Core.PSAzureContext] $context
+        [string] $environmentName
     )
-
-    if ($context) {
-        Write-Host "Using passed context (Account $($context.Account), Tenant $($context.Tenant.Id))"
-        return $context
-    }
 
     $rootDir = Get-RootFolder $script:ScriptDir
     $contextFile = Join-Path $rootDir ".user"
@@ -226,27 +220,33 @@ Function New-ADApplications() {
             $tenantId = $script:TenantId
         }
 
+        $message = ""
         try {
             $creds = Connect-AzureADAlias `
                 -AzureEnvironmentName $context.Environment.Name `
                 -TenantId $tenantId `
                 -AccountId $context.Account.Id `
-                -Credential $context.Account.Credential
+                -Credential $context.Account.Credential -Verbose
         }
         catch {
-            # For some accounts $context.Account.Id may be first.last@something.com which might
-            # not be correct UserPrincipalName. In those cases we will prompt for another login.
-            try {
-                $creds = Connect-AzureADAlias `
-                    -AzureEnvironmentName $context.Environment.Name `
-                    -TenantId $tenantId `
-            }
-            catch {
-                Write-Host "Failed collecting user credentials while registering $($applicationDisplayName): $($_.Exception.Message)"
+            $message = $_.Exception.Message
+            if ($script:interactive) {
+                Write-Host $message
+                # For some accounts $context.Account.Id may be first.last@something.com which might
+                # not be correct UserPrincipalName. In those cases we will prompt for another login.
+                try {
+                    $creds = Connect-AzureADAlias `
+                        -AzureEnvironmentName $context.Environment.Name `
+                        -TenantId $tenantId -Verbose `
+                }
+                catch {
+                    $message = $_.Exception.Message
+                }
             }
         }
 
         if (!$creds) {
+            Write-Host "Failed collecting user credentials while registering $($applicationDisplayName): $($message)"
             return $null
         }
 
@@ -639,13 +639,16 @@ if (Get-Module -ListAvailable -Name "AzureAD.Standard.Preview") {
     throw "This script is not compatible with your computer, please use Azure CloudShell https://shell.azure.com/powershell"
 }
 
-$selectedContext = Select-Context `
-    -context $script:Context `
-    -environmentName $script:EnvironmentName
+if (!$script:Context) {
+    $script:Context = Select-Context -environmentName $script:EnvironmentName
+    $script:interactive = $false
+}
+else {
+    Write-Host "Using passed context (Account $($context.Account), Tenant $($context.Tenant.Id))"
+    $script:interactive = $true
+}
 
-$aadConfig = New-ADApplications `
-    -applicationName $script:Name `
-    -context $selectedContext
+$aadConfig = New-ADApplications -applicationName $script:Name -context $script:Context
 
 $aadConfigJson = $aadConfig | ConvertTo-Json
 
