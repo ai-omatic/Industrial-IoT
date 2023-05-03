@@ -48,6 +48,7 @@ steps:
     azurePowerShellVersion: 'latestVersion'
     scriptType: 'InlineScript'
     Inline: |
+      Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser
       $secureContainerRegistryPassword = "$(ContainerRegistryPassword)" `
         | ConvertTo-SecureString -AsPlainText -Force
       Get-AzContext -ListAvailable
