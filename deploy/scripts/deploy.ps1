@@ -6,22 +6,27 @@
     Deploys the Industrial IoT services dependencies, and optionally microservices and UI to Azure.
 
  .PARAMETER type
-    The type of deployment (minimum, local, services, simulation, app, all), defaults to all.
+    The type of deployment (minimum, local, services, simulation,
+     app, all), defaults to all.
 
  .PARAMETER version
-    Set to mcr image tag to deploy - if not set and version can not be parsed from branch name will deploy "latest".
+    Set to mcr image tag to deploy - if not set and version can 
+    not be parsed from branch name will deploy "latest".
 
  .PARAMETER branchName
-    The branch name where to find the deployment templates - if not set, will try to use git.
+    The branch name where to find the deployment templates - if 
+    not set, will try to use git.
 
  .PARAMETER repo
-    The repository to find the deployment templates in - if not set will try to use git or set default.
+    The repository to find the deployment templates in - if not 
+    set will try to use git or set default.
 
  .PARAMETER resourceGroupName
     Can be the name of an existing or new resource group.
 
  .PARAMETER resourceGroupLocation
-    Optional, a resource group location. If specified, will try to create a new resource group in this location.
+    Optional, a resource group location. If specified, will try
+     to create a new resource group in this location.
 
  .PARAMETER subscriptionId
     Optional, the subscription id where resources will be deployed.
@@ -30,10 +35,12 @@
     Or alternatively the subscription name.
 
  .PARAMETER tenantId
-    The Azure Active Directory tenant tied to the subscription(s) that should be listed as options.
+    The Azure Active Directory tenant tied to the subscription(s)
+     that should be listed as options.
 
  .PARAMETER authTenantId
-    Specifies an Azure Active Directory tenant for authentication that is different from the one tied to the subscription.
+    Specifies an Azure Active Directory tenant for authentication 
+    that is different from the one tied to the subscription.
 
  .PARAMETER accountName
     The account name to use if not to use default.
@@ -42,13 +49,15 @@
     The name of the application, if not local deployment.
 
  .PARAMETER aadConfig
-    The aad configuration object (use aad-register.ps1 to create object). If not provided, calls aad-register.ps1.
+    The aad configuration object (use aad-register.ps1 to create 
+    object). If not provided, calls aad-register.ps1.
 
  .PARAMETER context
     A previously created az context to be used for authentication.
 
  .PARAMETER aadApplicationName
-    The application name to use when registering aad application. If not set, uses applicationName.
+    The application name to use when registering aad application. 
+    If not set, uses applicationName.
 
  .PARAMETER containerRegistryServer
     The container registry server to use to pull images
@@ -60,22 +69,27 @@
     The password to use to pull images
 
  .PARAMETER imageNamespace
-    Override the automatically determined namespace of the container images
+    Override the automatically determined namespace of the 
+    container images
 
  .PARAMETER acrRegistryName
-    An optional name of an Azure container registry to deploy containers from.
+    An optional name of an Azure container registry to deploy 
+    containers from.
 
  .PARAMETER acrSubscriptionName
-    The subscription of the container registry, if different from the specified subscription.
+    The subscription of the container registry, if different 
+    from the specified subscription.
 
  .PARAMETER acrTenantId
-    The tenant where the container registry resides. If not provided uses all.
+    The tenant where the container registry resides. If not 
+    provided uses all.
 
  .PARAMETER environmentName
     The cloud environment to use, defaults to AzureCloud.
 
  .PARAMETER simulationProfile
-    If you are deploying a simulation, the simulation profile to use, if not default.
+    If you are deploying a simulation, the simulation profile 
+    to use, if not default.
 
  .PARAMETER numberOfSimulationsPerEdge
     Number of simulations to deploy per edge.
@@ -135,7 +149,6 @@ param(
     [switch] $isServicePrincipal,
     $aadConfig,
     $context = $null,
-    [switch] $testAllDeploymentOptions,
     [string] $environmentName = "AzureCloud"
 )
 
@@ -179,7 +192,7 @@ Function Select-Context() {
     if (!$context) {
         try {
             if ($script:credentials) {
-Write-Host "Signing into $($environment.Name) using the provided credentials..."
+                Write-Host "Signing into $($environment.Name) using the provided credentials..."
                 $connection = Connect-AzAccount -Environment $environment.Name `
                     -Credential $script:credentials `
                     -ServicePrincipal:$script:isServicePrincipal.IsPresent `
@@ -1236,11 +1249,6 @@ Import-Module Az.ContainerRegistry
 Select-RepositoryAndBranch
 $script:context = Select-Context -context $script:context `
     -environment (Get-AzEnvironment -Name $script:environmentName)
-
-if ($testAllDeploymentOptions.IsPresent) {
-    Test-All-Deployment-Options -context $script:context
-    return
-}
 
 $script:deleteOnErrorPrompt = Select-ResourceGroup
 New-Deployment -context $script:context
