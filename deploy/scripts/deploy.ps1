@@ -170,12 +170,12 @@ Function Select-Context() {
         }
     }
 
+    $rootDir = Get-RootFolder $script:ScriptDir
+    $contextFile = Join-Path $rootDir ".user"
     if ($context) {
         Write-Host "Using provided context $($context)..."
     }
     else {
-        $rootDir = Get-RootFolder $script:ScriptDir
-        $contextFile = Join-Path $rootDir ".user"
         if (!$context) {
             # Migrate .user file into root (next to .env)
             if (!(Test-Path $contextFile)) {
