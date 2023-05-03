@@ -42,22 +42,26 @@ steps:
       -ContainerRegistryServer "$(ContainerRegistryServer)"
 
 - task: AzurePowerShell@5
-  displayName: "Run deploy.ps1 deployment script"
+  displayName: "Run deployment script"
   inputs:
     azureSubscription: '$(AzureSubscription)'
     azurePowerShellVersion: 'latestVersion'
-    scriptType: filePath
-    scriptPath: '$(System.DefaultWorkingDirectory)/deploy/scripts/deploy.ps1'
-    scriptArguments: >
-      -type services
-      -version "$(PlatformVersion)"
-      -applicationName "$(ApplicationName)"
-      -resourceGroupName "$(ResourceGroupName)"
-      -resourceGroupLocation "$(Region)"
-      -imageNamespace "$(ImageNamespace)"
-      -containerRegistryServer "$(ContainerRegistryServer)"
-      -containerRegistryUsername "$(ContainerRegistryUsername)"
-      -containerRegistryPassword "$(ContainerRegistryPassword)"
+    scriptType: 'InlineScript'
+    Inline: |
+      $secureContainerRegistryPassword = "$(ContainerRegistryPassword)" `
+        | ConvertTo-SecureString -AsPlainText -Force
+      Write-Host "Deploying to '$(ResourceGroupName)'..."
+      . $(System.DefaultWorkingDirectory)/deploy/scripts/deploy.ps1 `
+          -type services `
+          -version "$(PlatformVersion)" `
+          -applicationName "$(ApplicationName)" `
+          -resourceGroupName "$(ResourceGroupName)" `
+          -resourceGroupLocation "$(Region)" `
+          -imageNamespace "$(ImageNamespace)" `
+          -containerRegistryServer "$(ContainerRegistryServer)" `
+          -containerRegistryUsername "$(ContainerRegistryUsername)" `
+          -containerRegistryPassword $secureContainerRegistryPassword
+      Write-Host "Finished deployment to '$(ResourceGroupName)'."
 
 - task: AzurePowerShell@5
   displayName: "Add permissions to KeyVault"
