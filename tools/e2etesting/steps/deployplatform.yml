@@ -50,8 +50,10 @@ steps:
     Inline: |
       $secureContainerRegistryPassword = "$(ContainerRegistryPassword)" `
         | ConvertTo-SecureString -AsPlainText -Force
-      $context = Get-AzContext
-      $context | Out-Host
+      $secureServicePrincipalSecret = "$(ServicePrincipalKey)" `
+        | ConvertTo-SecureString -AsPlainText -Force
+      $credentials = New-Object -TypeName System.Management.Automation.PSCredential `
+        -ArgumentList "$(ServicePrincipalId)", $secureServicePrincipalSecret
       Write-Host "Installing AzureAD module..."
       Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -Force
       Write-Host "Deploying to '$(ResourceGroupName)'..."
@@ -65,7 +67,8 @@ steps:
           -containerRegistryServer "$(ContainerRegistryServer)" `
           -containerRegistryUsername "$(ContainerRegistryUsername)" `
           -containerRegistryPassword $secureContainerRegistryPassword `
-          -context $context
+          -credentials $credentials `
+          -context $(Get-AzContext)
       Write-Host "Finished deployment to '$(ResourceGroupName)'."
 
 - task: AzurePowerShell@5

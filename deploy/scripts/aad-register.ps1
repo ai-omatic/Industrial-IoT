@@ -16,15 +16,19 @@
 
  .PARAMETER Context
     A previously created az context (optional).
+
+ .PARAMETER Credentials
+    Credentials to use to log in (optional).
 #>
 
 param(
     [Parameter(Mandatory = $true)] [string] $Name,
-    $Context,
+    [object] $Context,
     [string] $TenantId = $null,
     [string] $ReplyUrl = $null,
     [string] $Output = $null,
-    [string] $EnvironmentName = "AzureCloud"
+    [string] $EnvironmentName = "AzureCloud",
+    [pscredential] $Credentials
 )
 
 #*******************************************************************************************************
@@ -220,13 +224,20 @@ Function New-ADApplications() {
             $tenantId = $script:TenantId
         }
 
+        if (!$script:Credentials) {
+            $script:Credentials = $context.Account.Credential
+        }
+        else {
+            Write-Host "Using provided credentials..."
+        }
+
         $message = ""
         try {
             $creds = Connect-AzureADAlias `
                 -AzureEnvironmentName $context.Environment.Name `
                 -TenantId $tenantId `
                 -AccountId $context.Account.Id `
-                -Credential $context.Account.Credential -Verbose
+                -Credential $script:Credentials
         }
         catch {
             $message = $_.Exception.Message
@@ -644,7 +655,7 @@ if (!$script:Context) {
     $script:interactive = $false
 }
 else {
-    Write-Host "Using passed context (Account $($context.Account), Tenant $($context.Tenant.Id))"
+    Write-Host "Using passed context (Account $($script:Context.Account), Tenant $($script:Context.Tenant.Id))"
     $script:interactive = $true
 }
 

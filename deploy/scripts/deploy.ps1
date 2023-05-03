@@ -173,7 +173,7 @@ Function Select-Context() {
     $rootDir = Get-RootFolder $script:ScriptDir
     $contextFile = Join-Path $rootDir ".user"
     if ($context) {
-        Write-Host "Using provided context $($context)..."
+        Write-Host "Using provided context (Account $($script:Context.Account), Tenant $($script:Context.Tenant.Id))"
         $script:subscriptionId = $context.Subscription.Id
     }
     else {
@@ -1011,7 +1011,8 @@ Write-Warning "Standard_D4s_v4 VM with Nested virtualization for IoT Edge Eflow 
         }
 
         $script:aadConfig = & (Join-Path $script:ScriptDir "aad-register.ps1") `
-            -Context $aadRegisterContext -Name $script:aadApplicationName
+            -Context $aadRegisterContext -Name $script:aadApplicationName `
+            -Credentials $script:credentials
 
         Write-Host "Client and services AAD applications registered..."
         Write-Host
