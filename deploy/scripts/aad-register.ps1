@@ -214,27 +214,20 @@ Function New-AppRole() {
 Function New-ADApplications() {
     param(
         [Microsoft.Azure.Commands.Profile.Models.Core.PSAzureContext] $context,
-        [string] $applicationName
+        [string] $applicationName,
+        [string] $accessToken
     )
     try {
         $tenantId = $context.Tenant.Id
-
         if (![string]::IsNullOrEmpty($script:TenantId)) {
             $tenantId = $script:TenantId
         }
 
-        # This will fill the token cache with access token
-        Get-AzADApplication -OwnedApplication | Out-Null
-
         $message = ""
         try {
-            $cache = $context.TokenCache
-            $cacheItems = $cache.ReadItems()
-            $token = ($cacheItems | Where-Object { $_.Resource -eq "https://graph.windows.net/" })
-
             $creds = Connect-AzureADAlias `
                 -AzureEnvironmentName $context.Environment.Name `
-                -AadAccessToken $token.AccessToken `
+                -AadAccessToken $accessToken `
                 -TenantId $tenantId `
                 -AccountId $context.Account.Id
         }
@@ -247,7 +240,7 @@ Function New-ADApplications() {
                 try {
                     $creds = Connect-AzureADAlias `
                         -AzureEnvironmentName $context.Environment.Name `
-                        -TenantId $tenantId -Verbose `
+                        -TenantId $tenantId
                 }
                 catch {
                     $message = $_.Exception.Message
@@ -658,18 +651,34 @@ else {
     $script:interactive = $false
 }
 
-$aadConfig = New-ADApplications -applicationName $script:Name -context $script:Context
+$previousContext = $script:Context
+try {
+    # This will fill the token cache with an access token
+    Get-AzADApplication -OwnedApplication | Out-Null
+    
+    $context = Get-AzContext
+    $cache = $context.TokenCache
+    $cacheItems = $cache.ReadItems()
+    $token = ($cacheItems | Where-Object { $_.Resource -eq "https://graph.windows.net/" })
 
-$aadConfigJson = $aadConfig | ConvertTo-Json
+    $aadConfig = New-ADApplications -applicationName $script:Name `
+        -accessToken $token.AccessToken -context $context
+    $aadConfigJson = $aadConfig | ConvertTo-Json
 
-if($isCloudShell) {
-    Write-Host "aadConfig:"
-    Write-Host $aadConfigJson
+    if($isCloudShell) {
+        Write-Host "aadConfig:"
+        Write-Host $aadConfigJson
+    }
+
+    if ($script:Output) {
+        $aadConfigJson | Out-File $script:Output
+        return
+    }
+
+    return $aadConfig
 }
-
-if ($script:Output) {
-    $aadConfigJson | Out-File $script:Output
-    return
+finally {
+    if ($previousContext) {
+        Set-AzContext -Context $previousContext
+    }
 }
-
-return $aadConfig
