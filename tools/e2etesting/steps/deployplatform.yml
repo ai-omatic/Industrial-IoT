@@ -48,12 +48,12 @@ steps:
     azurePowerShellVersion: 'latestVersion'
     scriptType: 'InlineScript'
     Inline: |
-      Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser
       $secureContainerRegistryPassword = "$(ContainerRegistryPassword)" `
         | ConvertTo-SecureString -AsPlainText -Force
-      Get-AzContext -ListAvailable
       $context = Get-AzContext
       $context | Out-Host
+      Write-Host "Installing AzureAD module..."
+      Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -Force
       Write-Host "Deploying to '$(ResourceGroupName)'..."
       . $(System.DefaultWorkingDirectory)/deploy/scripts/deploy.ps1 `
           -type services `
