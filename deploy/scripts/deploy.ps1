@@ -309,6 +309,7 @@ Function Select-Context() {
         Save-AzContext -Path $contextFile
     }
 
+    # Seed aad token in token cache
     Write-Host "Azure subscription $($context.Subscription.Name) ($($context.Subscription.Id)) selected."
     return $context
 }

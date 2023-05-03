@@ -27,8 +27,7 @@ param(
     [string] $TenantId = $null,
     [string] $ReplyUrl = $null,
     [string] $Output = $null,
-    [string] $EnvironmentName = "AzureCloud",
-    [pscredential] $Credentials
+    [string] $EnvironmentName = "AzureCloud"
 )
 
 #*******************************************************************************************************
@@ -85,9 +84,9 @@ Function Select-Context() {
         try {
             # for the case where prompting web browser is not applicable, we will prompt for DeviceAuthentication login.
             $azProfile = Connect-AzAccount `
-            -UseDeviceAuthentication `
-            -Environment $environmentName @tenantIdArg `
-            -ErrorAction Stop
+                -UseDeviceAuthentication `
+                -Environment $environmentName @tenantIdArg `
+                -ErrorAction Stop
 
             $reply = Read-Host -Prompt "Save credentials in .user file? [y/n]"
             if ($reply -match "[yY]") {
@@ -224,20 +223,20 @@ Function New-ADApplications() {
             $tenantId = $script:TenantId
         }
 
-        if (!$script:Credentials) {
-            $script:Credentials = $context.Account.Credential
-        }
-        else {
-            Write-Host "Using provided credentials..."
-        }
+        # This will fill the token cache with access token
+        Get-AzADApplication -OwnedApplication | Out-Null
 
         $message = ""
         try {
+            $cache = $context.TokenCache
+            $cacheItems = $cache.ReadItems()
+            $token = ($cacheItems | Where-Object { $_.Resource -eq "https://graph.windows.net/" })
+
             $creds = Connect-AzureADAlias `
                 -AzureEnvironmentName $context.Environment.Name `
+                -AadAccessToken $token.AccessToken `
                 -TenantId $tenantId `
-                -AccountId $context.Account.Id `
-                -Credential $script:Credentials
+                -AccountId $context.Account.Id
         }
         catch {
             $message = $_.Exception.Message
@@ -652,11 +651,11 @@ if (Get-Module -ListAvailable -Name "AzureAD.Standard.Preview") {
 
 if (!$script:Context) {
     $script:Context = Select-Context -environmentName $script:EnvironmentName
-    $script:interactive = $false
+    $script:interactive = $true
 }
 else {
     Write-Host "Using passed context (Account $($script:Context.Account), Tenant $($script:Context.Tenant.Id))"
-    $script:interactive = $true
+    $script:interactive = $false
 }
 
 $aadConfig = New-ADApplications -applicationName $script:Name -context $script:Context
