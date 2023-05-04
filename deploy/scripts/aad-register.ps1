@@ -223,6 +223,18 @@ Function New-ADApplications() {
             $tenantId = $script:TenantId
         }
 
+        Get-AzADApplication -OwnedApplication | Out-Null
+        $accessToken = $null
+        try {
+            $token = Get-AzAccessToken -ResourceUrl "https://graph.windows.net/"
+            if ($token) {
+                $accessToken = $token.Token
+            }
+        }
+        catch {
+            $accessToken = $null
+        }
+
         $message = ""
         try {
             $creds = Connect-AzureADAlias `
@@ -651,34 +663,16 @@ else {
     $script:interactive = $false
 }
 
-$previousContext = $script:Context
-try {
-    # This will fill the token cache with an access token
-    Get-AzADApplication -OwnedApplication | Out-Null
-    
-    $context = Get-AzContext
-    $cache = $context.TokenCache
-    $cacheItems = $cache.ReadItems()
-    $token = ($cacheItems | Where-Object { $_.Resource -eq "https://graph.windows.net/" })
+$aadConfig = New-ADApplications -applicationName $script:Name -context $context
+$aadConfigJson = $aadConfig | ConvertTo-Json
 
-    $aadConfig = New-ADApplications -applicationName $script:Name `
-        -accessToken $token.AccessToken -context $context
-    $aadConfigJson = $aadConfig | ConvertTo-Json
-
-    if($isCloudShell) {
-        Write-Host "aadConfig:"
-        Write-Host $aadConfigJson
-    }
-
-    if ($script:Output) {
-        $aadConfigJson | Out-File $script:Output
-        return
-    }
-
-    return $aadConfig
+if($isCloudShell) {
+    Write-Host "aadConfig:"
+    Write-Host $aadConfigJson
 }
-finally {
-    if ($previousContext) {
-        Set-AzContext -Context $previousContext
-    }
+
+if ($script:Output) {
+    $aadConfigJson | Out-File $script:Output
+    return
 }
+return $aadConfig
