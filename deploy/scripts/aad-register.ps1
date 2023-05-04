@@ -3,7 +3,8 @@
     Registers required applications.
 
  .DESCRIPTION
-    Registers the required applications in AAD and returns an object containing the information.
+    Registers the required applications in AAD and returns an 
+    object containing the information.
 
  .PARAMETER Name
     The Name prefix under which to register the applications.
@@ -82,7 +83,8 @@ Function Select-Context() {
     }
     catch {
         try {
-            # for the case where prompting web browser is not applicable, we will prompt for DeviceAuthentication login.
+            # for the case where prompting web browser is not applicable, we will
+            # prompt for DeviceAuthentication login.
             $azProfile = Connect-AzAccount `
                 -UseDeviceAuthentication `
                 -Environment $environmentName @tenantIdArg `
@@ -223,7 +225,7 @@ Function New-ADApplications() {
             $tenantId = $script:TenantId
         }
 
-        Get-AzADApplication -OwnedApplication | Out-Null
+        # Get-AzADApplication -OwnedApplication | Out-Null
         $accessToken = $null
         try {
             $token = Get-AzAccessToken -ResourceUrl "https://graph.windows.net/"
@@ -261,7 +263,7 @@ Function New-ADApplications() {
         }
 
         if (!$creds) {
-            Write-Host "Failed collecting user credentials while registering $($applicationDisplayName): $($message)"
+            Write-Host "Failed to sign into Azure Active Directy. $($applicationDisplayName): $($message)"
             return $null
         }
 

@@ -3,7 +3,8 @@
     Deploys Industrial IoT services to Azure.
 
  .DESCRIPTION
-    Deploys the Industrial IoT services dependencies, and optionally microservices and UI to Azure.
+    Deploys the Industrial IoT services and dependencies on
+    Azure.
 
  .PARAMETER type
     The type of deployment (minimum, local, services, simulation,
