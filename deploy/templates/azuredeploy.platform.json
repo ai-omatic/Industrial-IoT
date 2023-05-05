@@ -249,6 +249,78 @@
             ]
         },
         {
+
+
+
+            "comments": "Save service url as configuration.",
+
+            "type": "Microsoft.Resources/deployments",
+
+            "apiVersion": "2019-08-01",
+
+            "name": "[variables('serviceConfigurationResourceName')]",
+
+            "condition": "[and(not(empty(parameters('keyVaultName'))), not(empty(parameters('serviceSiteName'))))]",
+
+            "properties": {
+
+                "mode": "Incremental",
+
+                "parameters": {
+
+                    "keyVaultName": {
+
+                        "value": "[parameters('keyVaultName')]"
+
+                    },
+
+                    "configuration": {
+
+                        "value": [
+
+                            {
+
+                                "key": "PCS_SERVICE_NAME",
+
+                                "value": "[concat('https://', reference(variables('serviceSiteResourceId'), '2018-11-01').hostNames[0])]"
+
+                            },
+
+
+
+
+
+
+                        ]
+
+                    },
+
+                    "tags": {
+
+                        "value": "[parameters('tags')]"
+
+                    }
+
+                },
+
+                "templateLink": {
+
+                    "contentVersion": "1.0.0.0",
+
+                    "uri": "[concat(variables('templateBaseUrl'), 'azuredeploy.configuration.json')]"
+
+                }
+
+            },
+
+            "dependsOn": [
+
+                "[variables('serviceSiteResourceId')]"
+
+            ]
+
+        },
+        {
             "comments": "Deploy application container.",
             "condition": "[not(empty(parameters('siteName')))]",
             "type": "Microsoft.Web/sites",
