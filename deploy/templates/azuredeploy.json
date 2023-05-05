@@ -345,6 +345,7 @@
         "platformDeployment": "[not(and(empty(parameters('siteName')), empty(parameters('serviceSiteName'))))]",
         "platformResourcName": "platform",
         "platformResourceId": "[resourceId('Microsoft.Resources/deployments', variables('platformResourcName'))]",
+        "platformConfigurationResourceName": "platform.configuration",
         "simulationDeployment": "[not(and(equals(0, parameters('numberOfLinuxGateways')), equals(0, parameters('numberOfWindowsGateways'))))]",
         "simulationResourcName": "simulation",
         "iotHubResourceId": "[resourceId('Microsoft.Devices/Iothubs', parameters('iotHubName'))]",
@@ -839,6 +840,39 @@
             },
             "dependsOn": [
                 "[variables('configurationResourceId')]"
+            ]
+        },
+        {
+            "comments": "Save platform configuration in KeyVault.",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-08-01",
+            "name": "[variables('platformConfigurationResourceName')]",
+            "condition": "[variables('platformDeployment')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "keyVaultName": {
+                        "value": "[parameters('keyVaultName')]"
+                    },
+                    "configuration": {
+                        "value": [
+                            {
+                                "key": "PCS_SERVICE_URL",
+                                "value":  "[if (variables('platformDeployment'), reference(variables('platformResourceId'), '2017-05-10').outputs.serviceUrl.value, '')]"
+                            }
+                        ]
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    }
+                },
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[concat(variables('templateBaseUrl'), 'azuredeploy.configuration.json')]"
+                }
+            },
+            "dependsOn": [
+                "[variables('platformResourceId')]"
             ]
         },
         {
