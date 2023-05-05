@@ -315,6 +315,25 @@ namespace Azure.IIoT.OpcUa.Publisher.Service.Clients
         }
 
         /// <inheritdoc/>
+        public Task<QueryCompilationResponseModel> CompileQueryAsync(string endpoint,
+            QueryCompilationRequestModel request, CancellationToken ct = default)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+            return Execute("CompileQuery", endpoint, (publisherId, endpoint) =>
+            {
+                var client = new TwinApiClient(_client, publisherId, _serializer);
+                return client.CompileQueryAsync(new ConnectionModel
+                {
+                    Endpoint = endpoint,
+                    User = request.Header?.Elevation
+                }, request, ct);
+            }, ct);
+        }
+
+        /// <inheritdoc/>
         public Task<HistoryServerCapabilitiesModel> HistoryGetServerCapabilitiesAsync(
             string endpoint, CancellationToken ct)
         {

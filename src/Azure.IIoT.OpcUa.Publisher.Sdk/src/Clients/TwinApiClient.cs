@@ -396,6 +396,31 @@ namespace Azure.IIoT.OpcUa.Publisher.Sdk.Clients
         }
 
         /// <inheritdoc/>
+        public async Task<QueryCompilationResponseModel> CompileQueryAsync(ConnectionModel connection,
+            QueryCompilationRequestModel request, CancellationToken ct)
+        {
+            if (connection == null)
+            {
+                throw new ArgumentNullException(nameof(connection));
+            }
+            if (string.IsNullOrEmpty(connection.Endpoint?.Url))
+            {
+                throw new ArgumentException("Endpoint Url missing.", nameof(connection));
+            }
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+            var response = await _methodClient.CallMethodAsync(_target,
+                "CompileQuery_V2", _serializer.SerializeToMemory(new
+                {
+                    connection,
+                    request
+                }), ContentMimeType.Json, null, ct).ConfigureAwait(false);
+            return _serializer.DeserializeResponse<QueryCompilationResponseModel>(response);
+        }
+
+        /// <inheritdoc/>
         public async Task<HistoryServerCapabilitiesModel> HistoryGetServerCapabilitiesAsync(
             ConnectionModel connection, CancellationToken ct)
         {

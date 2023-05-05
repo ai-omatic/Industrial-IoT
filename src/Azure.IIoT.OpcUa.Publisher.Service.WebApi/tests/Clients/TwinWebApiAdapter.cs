@@ -12,6 +12,7 @@ namespace Azure.IIoT.OpcUa.Publisher.Service.WebApi.Tests.Clients
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using System.Net.Http;
 
     /// <summary>
     /// Implements node services as adapter on top of api.
@@ -53,7 +54,7 @@ namespace Azure.IIoT.OpcUa.Publisher.Service.WebApi.Tests.Clients
             BrowseStreamRequestModel request, CancellationToken ct)
         {
             // TODO
-            throw new NotImplementedException();
+            throw new NotSupportedException("Browse stream not supported.");
         }
 
         /// <inheritdoc/>
@@ -68,6 +69,14 @@ namespace Azure.IIoT.OpcUa.Publisher.Service.WebApi.Tests.Clients
             NodeMetadataRequestModel request, CancellationToken ct)
         {
             return await _client.NodeGetMetadataAsync(endpoint, request, ct).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        public Task<QueryCompilationResponseModel> CompileQueryAsync(string endpoint,
+            QueryCompilationRequestModel request, CancellationToken ct)
+        {
+            // TODO
+            throw new NotSupportedException("Compling query not supported.");
         }
 
         /// <inheritdoc/>
