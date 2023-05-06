@@ -119,10 +119,12 @@
     "variables": {
         "serviceSiteResourceName": "[if(empty(parameters('serviceSiteName')), concat('svc', take(uniqueString(subscription().subscriptionId, resourceGroup().id), 5)), parameters('serviceSiteName'))]",
         "serviceSiteResourceId": "[resourceId('Microsoft.Web/sites', variables('serviceSiteResourceName'))]",
-        "serviceContainerImageName": "[concat(if(empty(parameters('imagesNamespace')), '', concat(parameters('imagesNamespace'), '/')), 'iot/industrial-iot-services-all', ':', parameters('imagesTag'))]",
+        "serviceContainerImageTag": "[if(empty(parameters('imagesTag')), 'latest', parameters('imagesTag'))]",
+        "serviceContainerImageName": "[concat(if(empty(parameters('imagesNamespace')), '', concat(parameters('imagesNamespace'), '/')), 'iot/industrial-iot-services-all', ':', variables('serviceContainerImageTag'))]",
         "appSiteResourceName": "[if(empty(parameters('siteName')), concat('app', take(uniqueString(subscription().subscriptionId, resourceGroup().id), 5)), parameters('siteName'))]",
         "appSiteResourceId": "[resourceId('Microsoft.Web/sites', variables('appSiteResourceName'))]",
-        "appContainerImageName": "[concat(if(empty(parameters('imagesNamespace')), '', concat(parameters('imagesNamespace'), '/')), 'iot/industrial-iot-frontend', ':', parameters('imagesTag'))]"
+        "appContainerImageTag": "[if(empty(parameters('imagesTag')), 'latest', parameters('imagesTag'))]",
+        "appContainerImageName": "[concat(if(empty(parameters('imagesNamespace')), '', concat(parameters('imagesNamespace'), '/')), 'iot/industrial-iot-frontend', ':', variables('appContainerImageTag'))]"
     },
     "resources": [
         {
