@@ -9,7 +9,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PublishProfile>DefaultContainer</PublishProfile>
-    <ContainerImageName>iot/opc-publisher-service</ContainerImageName>
+    <ContainerImageName>iot/industrial-iot-services-all</ContainerImageName>
     <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:7.0</ContainerBaseImage>
   </PropertyGroup>
   <ItemGroup>
