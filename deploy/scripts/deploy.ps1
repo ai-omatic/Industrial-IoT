@@ -845,6 +845,15 @@ Function New-Deployment() {
             }
         }
 
+        if ([string]::IsNullOrEmpty($script:version)) {
+            if ($script:branchName.StartsWith("release/")) {
+                $script:version = $script:branchName.Replace("release/", "")
+            }
+            else {
+                $script:version = "latest"
+            }
+        }
+
         if ([string]::IsNullOrEmpty($script:containerRegistryServer)) {
             # Try and get registry credentials
             try {
@@ -853,15 +862,6 @@ Function New-Deployment() {
             catch {
                 Write-Warning $_.Exception.Message
                 $creds = $null
-            }
-
-            if ([string]::IsNullOrEmpty($script:version)) {
-                if ($script:branchName.StartsWith("release/")) {
-                    $script:version = $script:branchName.Replace("release/", "")
-                }
-                else {
-                    $script:version = "latest"
-                }
             }
 
             # Configure registry
