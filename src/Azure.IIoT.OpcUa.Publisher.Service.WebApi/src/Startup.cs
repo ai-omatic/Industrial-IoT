@@ -28,6 +28,7 @@ namespace Azure.IIoT.OpcUa.Publisher.Service.WebApi
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Azure.IIoT.OpcUa.Publisher.Service.Runtime;
 
     /// <summary>
     /// Webservice startup
@@ -164,10 +165,15 @@ namespace Azure.IIoT.OpcUa.Publisher.Service.WebApi
             builder.AddMessagePackSerializer();
             builder.AddNewtonsoftJsonSerializer();
 
-            // Register IoT Hub services for registry and edge clients.
+            // Register IoT Hub services for registry, edge clients and deployment.
             builder.AddIoTHubServices();
-            builder.RegisterModule<RegistryServices>();
 
+            builder.RegisterType<PublisherDeploymentConfig>()
+                .AsImplementedInterfaces();
+            builder.RegisterType<PublisherDeployment>()
+                .AsImplementedInterfaces();
+
+            builder.RegisterModule<RegistryServices>();
             builder.ConfigureServices(
                 services => services.AddMemoryCache());
             builder.RegisterType<ChunkMethodClient>()
