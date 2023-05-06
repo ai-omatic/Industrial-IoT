@@ -222,7 +222,7 @@
             },
             "resources": [
                 {
-                    "comments": "Configuration for all in one services application.",
+                    "comments": "Configuration for services web app.",
                     "condition": "[not(empty(parameters('serviceSiteName')))]",
                     "type": "config",
                     "name": "appsettings",

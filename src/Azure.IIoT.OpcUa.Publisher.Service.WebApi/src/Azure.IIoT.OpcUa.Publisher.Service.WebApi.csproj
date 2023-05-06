@@ -13,7 +13,7 @@
     <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:7.0</ContainerBaseImage>
   </PropertyGroup>
   <ItemGroup>
-    <ContainerPort Include="9045" Type="tcp" />
+    <ContainerPort Include="9080" Type="tcp" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.5" />
