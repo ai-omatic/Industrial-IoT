@@ -225,7 +225,6 @@ Function New-ADApplications() {
             $tenantId = $script:TenantId
         }
 
-        # Get-AzADApplication -OwnedApplication | Out-Null
         $accessToken = $null
         try {
             $token = Get-AzAccessToken -ResourceUrl "https://graph.windows.net/"

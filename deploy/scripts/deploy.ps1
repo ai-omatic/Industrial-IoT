@@ -1143,20 +1143,10 @@ Write-Warning "Standard_D4s_v4 VM with Nested virtualization for IoT Edge Eflow 
                 $serviceUri = $deployment.Outputs["serviceUrl"].Value
 
                 if (![string]::IsNullOrEmpty($serviceUri)) {
-                    $replyUrls.Add($serviceUri + "/twin/swagger/oauth2-redirect.html")
-                    $replyUrls.Add($serviceUri + "/registry/swagger/oauth2-redirect.html")
-                    $replyUrls.Add($serviceUri + "/history/swagger/oauth2-redirect.html")
-                    $replyUrls.Add($serviceUri + "/publisher/swagger/oauth2-redirect.html")
-                    $replyUrls.Add($serviceUri + "/edge/publisher/swagger/oauth2-redirect.html")
-                    $replyUrls.Add($serviceUri + "/events/swagger/oauth2-redirect.html")
+                    $replyUrls.Add($serviceUri + "/swagger/oauth2-redirect.html")
                 }
 
-                $replyUrls.Add("http://localhost:9080/twin/swagger/oauth2-redirect.html")
-                $replyUrls.Add("http://localhost:9080/registry/swagger/oauth2-redirect.html")
-                $replyUrls.Add("http://localhost:9080/history/swagger/oauth2-redirect.html")
-                $replyUrls.Add("http://localhost:9080/publisher/swagger/oauth2-redirect.html")
-                $replyUrls.Add("http://localhost:9080/edge/publisher/swagger/oauth2-redirect.html")
-                $replyUrls.Add("http://localhost:9080/events/swagger/oauth2-redirect.html")
+                $replyUrls.Add("http://localhost:9080/swagger/oauth2-redirect.html")
 
                 $replyUrls.Add("http://localhost:5000/signin-oidc")
                 $replyUrls.Add("https://localhost:5001/signin-oidc")
