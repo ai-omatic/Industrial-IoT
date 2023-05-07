@@ -62,7 +62,7 @@ namespace Azure.IIoT.OpcUa.Publisher.Testing.Fixtures
         /// Filter parser
         /// </summary>
         public IFilterParser Parser
-            => _container.Resolve<FilterQueryParser>();
+            => _container.Resolve<IFilterParser>();
 
         /// <summary>
         /// Now

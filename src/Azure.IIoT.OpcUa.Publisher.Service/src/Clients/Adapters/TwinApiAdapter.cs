@@ -113,11 +113,10 @@ namespace Azure.IIoT.OpcUa.Publisher.Service.Clients.Adapters
         }
 
         /// <inheritdoc/>
-        public Task<QueryCompilationResponseModel> CompileQueryAsync(ConnectionModel endpoint,
+        public async Task<QueryCompilationResponseModel> CompileQueryAsync(ConnectionModel endpoint,
             QueryCompilationRequestModel request, CancellationToken ct)
         {
-            // TODO
-            throw new NotSupportedException("Compiling query is not supported");
+            return await _client.CompileQueryAsync(endpoint, request, ct).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>

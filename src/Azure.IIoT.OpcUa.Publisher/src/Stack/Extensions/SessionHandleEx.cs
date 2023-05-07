@@ -531,7 +531,8 @@ namespace Azure.IIoT.OpcUa.Publisher.Stack.Extensions
                 foreach (var (modellingRule, reference) in referencesWithRules)
                 {
                     var browseName = reference.BrowseName.AsString(session.MessageContext);
-                    var relativePath = ImmutableRelativePath.Create(parent?.BrowsePath, browseName);
+                    var relativePath = ImmutableRelativePath.Create(parent?.BrowsePath,
+                        "/" + browseName);
                     var nodeClass = reference.NodeClass.ToServiceType();
                     if (NodeId.IsNull(modellingRule.Item2) || nodeClass == null)
                     {

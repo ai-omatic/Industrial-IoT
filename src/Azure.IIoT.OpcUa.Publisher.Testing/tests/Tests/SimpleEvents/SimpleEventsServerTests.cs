@@ -158,7 +158,7 @@ namespace Azure.IIoT.OpcUa.Publisher.Testing.Tests
                     new SimpleAttributeOperandModel
                     {
                         TypeDefinitionId = "i=2041",
-                        BrowsePath = new[] {"/Time" },
+                        BrowsePath = new[] { "/Time" },
                         AttributeId = NodeAttribute.Value,
                         DisplayName = "/Time.Value"
                     },
@@ -193,21 +193,21 @@ namespace Azure.IIoT.OpcUa.Publisher.Testing.Tests
                     new SimpleAttributeOperandModel
                     {
                         TypeDefinitionId = "http://opcfoundation.org/SimpleEvents#i=235",
-                        BrowsePath = new[] { "/[http://opcfoundation.org/SimpleEvents#CycleId]" },
+                        BrowsePath = new[] { "/http://opcfoundation.org/SimpleEvents#CycleId" },
                         AttributeId = NodeAttribute.Value,
                         DisplayName = "/CycleId.Value"
                     },
                     new SimpleAttributeOperandModel
                     {
                         TypeDefinitionId = "http://opcfoundation.org/SimpleEvents#i=235",
-                        BrowsePath = new[] { "/[http://opcfoundation.org/SimpleEvents#CurrentStep]" },
+                        BrowsePath = new[] { "/http://opcfoundation.org/SimpleEvents#CurrentStep" },
                         AttributeId = NodeAttribute.Value,
                         DisplayName = "/CurrentStep.Value"
                     },
                     new SimpleAttributeOperandModel
                     {
                         TypeDefinitionId = "http://opcfoundation.org/SimpleEvents#i=184",
-                        BrowsePath = new[] { "/[http://opcfoundation.org/SimpleEvents#Steps]" },
+                        BrowsePath = new[] { "/http://opcfoundation.org/SimpleEvents#Steps" },
                         AttributeId = NodeAttribute.Value,
                         DisplayName = "/Steps.Value"
                     }
@@ -224,7 +224,7 @@ namespace Azure.IIoT.OpcUa.Publisher.Testing.Tests
                                 new FilterOperandModel
                                 {
                                     Value = "http://opcfoundation.org/SimpleEvents#i=184",
-                                    DataType = "TypeDefinitionId ="
+                                    DataType = "NodeId"
                                 }
                             }
                         }

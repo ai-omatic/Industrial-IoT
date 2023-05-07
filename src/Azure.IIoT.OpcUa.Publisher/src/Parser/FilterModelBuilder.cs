@@ -18,6 +18,7 @@ namespace Azure.IIoT.OpcUa.Publisher.Parser
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Builds event filter and query filters from a syntax tree.
@@ -933,10 +934,32 @@ namespace Azure.IIoT.OpcUa.Publisher.Parser
             }
         }
 
+        /// <summary>
+        /// Compare attribute operands. We have to use a comparer because reord
+        /// do not compare arrays or read only lists by value.
+        /// </summary>
+        private sealed class SimpleAttributeOperandComperer :
+            IEqualityComparer<SimpleAttributeOperandModel>
+        {
+            /// <inheritdoc/>
+            public bool Equals(SimpleAttributeOperandModel? x, SimpleAttributeOperandModel? y)
+            {
+                return x.IsSameAs(y);
+            }
+
+            /// <inheritdoc/>
+            public int GetHashCode([DisallowNull] SimpleAttributeOperandModel obj)
+            {
+                return HashCode.Combine(obj.IndexRange, obj.AttributeId, obj.DisplayName,
+                    obj.DataSetClassFieldId, obj.TypeDefinitionId, obj.BrowsePath == null ? 0 :
+                    new ImmutableRelativePath(obj.BrowsePath).GetHashCode());
+            }
+        }
+
         private record class ContentFilterElement2Model(int Id, ContentFilterElementModel Element);
         private readonly List<ContentFilterElement2Model> _contentFilter = new();
-        private readonly HashSet<SimpleAttributeOperandModel> _selectClauses = new();
-
+        private readonly HashSet<SimpleAttributeOperandModel> _selectClauses =
+            new(new SimpleAttributeOperandComperer());
         private readonly IJsonSerializer _serializer;
         private readonly IFilterParserContext _context;
         private readonly ParseTree _syntaxTree;
