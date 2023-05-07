@@ -648,10 +648,6 @@
                     "configuration": {
                         "value": [
                             {
-                                "key": "PCS_AUTH_REQUIRED",
-                                "value": "[not(empty(parameters('serviceAppId')))]"
-                            },
-                            {
                                 "key": "PCS_AUTH_TENANT",
                                 "value": "[subscription().tenantId]"
                             },
@@ -738,26 +734,6 @@
                             {
                                 "key": "PCS_KEYVAULT_URL",
                                 "value": "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))).vaultUri]"
-                            },
-                            {
-                                "key": "PCS_MSI_APPID",
-                                "value": "[reference(variables('identityResourceId'), '2018-11-30').clientId]"
-                            },
-                            {
-                                "key": "PCS_MSI_TENANT",
-                                "value": "[reference(variables('identityResourceId'), '2018-11-30').tenantId]"
-                            },
-                            {
-                                "key": "PCS_DPS_CONNSTRING",
-                                "value": "[concat('HostName=', reference(variables('dpsResourceId'), '2018-01-22'). serviceOperationsHostName, ';SharedAccessKeyName=', listkeys(variables('dpsResourceId'), '2018-01-22').value[0].keyName, ';SharedAccessKey=', listkeys(variables('dpsResourceId'), '2018-01-22').value[0].primaryKey)]"
-                            },
-                            {
-                                "key": "PCS_DPS_IDSCOPE",
-                                "value": "[reference(variables('dpsResourceId'), '2018-01-22').idScope]"
-                            },
-                            {
-                                "key": "PCS_DPS_ENDPOINT",
-                                "value": "[reference(variables('dpsResourceId'), '2018-01-22').deviceProvisioningHostName]"
                             },
                             {
                                 "key": "PCS_SUBSCRIPTION_ID",
