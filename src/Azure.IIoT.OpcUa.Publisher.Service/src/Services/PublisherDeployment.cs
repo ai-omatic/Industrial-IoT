@@ -46,7 +46,8 @@ namespace Azure.IIoT.OpcUa.Publisher.Service.Services
         /// </summary>
         /// <param name="serializer"></param>
         /// <param name="options"></param>
-        public PublisherDeployment(IJsonSerializer serializer, IOptions<PublisherDeploymentOptions> options)
+        public PublisherDeployment(IJsonSerializer serializer,
+            IOptions<PublisherDeploymentOptions> options)
         {
             CreateOptions = serializer.FromObject(new
             {
