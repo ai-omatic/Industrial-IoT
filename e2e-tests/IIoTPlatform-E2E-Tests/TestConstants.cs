@@ -176,6 +176,11 @@ namespace IIoTPlatform_E2E_Tests
             public const string PCS_AUTH_CLIENT_SECRET = "PCS_AUTH_CLIENT_SECRET";
 
             /// <summary>
+            /// Service App Id for authentication
+            /// </summary>
+            public const string PCS_AUTH_SERVICE_APPID = "PCS_AUTH_SERVICE_APPID";
+
+            /// <summary>
             /// Name of Industrial IoT Platform instance
             /// </summary>
             public const string ApplicationName = "ApplicationName";
