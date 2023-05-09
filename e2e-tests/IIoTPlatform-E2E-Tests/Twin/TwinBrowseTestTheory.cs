@@ -28,7 +28,7 @@ namespace IIoTPlatform_E2E_Tests.Twin
         [Fact, PriorityOrder(0)]
         public void BrowseAddressSpace()
         {
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
 
             var nodes = TestHelper.Twin.GetBrowseEndpointAsync(_context, _context.OpcUaEndpointId, null, cts.Token).GetAwaiter().GetResult();
 
@@ -45,7 +45,7 @@ namespace IIoTPlatform_E2E_Tests.Twin
         [Fact, PriorityOrder(1)]
         public void BrowseSpecificNode()
         {
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
 
             var nodes = TestHelper.Twin.GetBrowseEndpointAsync(_context, _context.OpcUaEndpointId, null, cts.Token).GetAwaiter().GetResult();
 
@@ -69,7 +69,7 @@ namespace IIoTPlatform_E2E_Tests.Twin
         [Fact, PriorityOrder(2)]
         public void BrowseSpecificNodeAbsolutePath()
         {
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
 
             const string nodeId = null; // Start browsing from Root
             var browsePath = new List<string> { "Objects", "Server", "ServerArray" };
@@ -83,7 +83,7 @@ namespace IIoTPlatform_E2E_Tests.Twin
         [Fact, PriorityOrder(3)]
         public void BrowseSpecificNodeRelativePath()
         {
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
 
             const string nodeId = "i=85"; // Start browsing from Objects
             var browsePath = new List<string> { "Server", "ServerArray" };
@@ -97,7 +97,7 @@ namespace IIoTPlatform_E2E_Tests.Twin
         [Fact, PriorityOrder(4)]
         public void BrowseAllNodesOfTypeObject()
         {
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
 
             var nodes = TestHelper.Twin.GetBrowseEndpointRecursiveAsync(_context, _context.OpcUaEndpointId, "Object", null, cts.Token).GetAwaiter().GetResult();
 
@@ -117,7 +117,7 @@ namespace IIoTPlatform_E2E_Tests.Twin
         [Fact, PriorityOrder(5)]
         public void BrowseAllNodesOfTypeVariable()
         {
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
 
             var nodes = TestHelper.Twin.GetBrowseEndpointRecursiveAsync(_context, _context.OpcUaEndpointId, "Variable", null, cts.Token).GetAwaiter().GetResult();
 

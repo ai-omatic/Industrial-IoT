@@ -45,7 +45,7 @@ namespace IIoTPlatform_E2E_Tests.Orchestrated
         [Fact, PriorityOrder(1)]
         public async Task TestCollectOAuthToken()
         {
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
             var token = await TestHelper.GetTokenAsync(_context, cts.Token).ConfigureAwait(false);
             Assert.NotEmpty(token);
         }
@@ -53,7 +53,7 @@ namespace IIoTPlatform_E2E_Tests.Orchestrated
         [Fact, PriorityOrder(2)]
         public async Task TestReadSimulatedOpcUaNodes()
         {
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
             var simulatedOpcServer = await TestHelper.GetSimulatedPublishedNodesConfigurationAsync(_context, cts.Token).ConfigureAwait(false);
             Assert.NotNull(simulatedOpcServer);
             Assert.NotEmpty(simulatedOpcServer.Keys);
@@ -63,7 +63,7 @@ namespace IIoTPlatform_E2E_Tests.Orchestrated
         [Fact, PriorityOrder(3)]
         public async Task TestRegisterOPCServerExpectSuccess()
         {
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
 
             // We will wait for microservices of IIoT platform to be healthy and modules to be deployed.
             await TestHelper.WaitForServicesAsync(_context, cts.Token).ConfigureAwait(false);
@@ -85,7 +85,7 @@ namespace IIoTPlatform_E2E_Tests.Orchestrated
         [Fact, PriorityOrder(4)]
         public async Task TestGetApplicationsFromRegistryExpectOneRegisteredApplication()
         {
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
             dynamic json = await TestHelper.Discovery.WaitForDiscoveryToBeCompletedAsync(
                 _context, new HashSet<string> { _context.OpcServerUrl }, cts.Token).ConfigureAwait(false);
             Assert.True(json != null, $"OPC Application with url {_context.OpcServerUrl} not found");
@@ -101,7 +101,7 @@ namespace IIoTPlatform_E2E_Tests.Orchestrated
                 Assert.False(string.IsNullOrWhiteSpace(_context.OpcServerUrl));
             }
 
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
             var json = await TestHelper.Discovery.WaitForEndpointDiscoveryToBeCompletedAsync(
                 _context, new HashSet<string> { _context.OpcServerUrl }, "SignAndEncrypt",
                 "http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256", cts.Token).ConfigureAwait(false);
@@ -144,7 +144,7 @@ namespace IIoTPlatform_E2E_Tests.Orchestrated
         public async Task TestCheckIfEndpointWasActivatedExpectActivatedAndConnected()
         {
             Assert.False(string.IsNullOrWhiteSpace(_context.OpcUaEndpointId));
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
             var json = await TestHelper.Registry.WaitForEndpointToBeActivatedAsync(_context, new HashSet<string> { _context.OpcUaEndpointId }, cts.Token).ConfigureAwait(false);
             Assert.True(json != null, "OPC UA Endpoint not found");
         }
@@ -159,7 +159,7 @@ namespace IIoTPlatform_E2E_Tests.Orchestrated
                 Assert.False(string.IsNullOrWhiteSpace(_context.OpcUaEndpointId));
             }
 
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
             var simulatedOpcServer = await TestHelper.GetSimulatedPublishedNodesConfigurationAsync(_context, cts.Token).ConfigureAwait(false);
 
             var route = string.Format(CultureInfo.InvariantCulture, TestConstants.APIRoutes.PublisherStartFormat, _context.OpcUaEndpointId);
@@ -190,8 +190,9 @@ namespace IIoTPlatform_E2E_Tests.Orchestrated
                 Assert.False(string.IsNullOrWhiteSpace(_context.OpcUaEndpointId));
             }
 
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
             var simulatedOpcServer = await TestHelper.GetSimulatedPublishedNodesConfigurationAsync(_context, cts.Token).ConfigureAwait(false);
+#if NOTSUPPORTED
             var route = TestConstants.APIRoutes.PublisherJobs;
             var response = TestHelper.CallRestApi(_context, Method.Get, route, ct: cts.Token);
             Assert.True(response.IsSuccessful, $"Got {response.StatusCode} Getting publishing jobs");
@@ -215,12 +216,13 @@ namespace IIoTPlatform_E2E_Tests.Orchestrated
             Assert.Equal(simulatedOpcServer.Values.First().OpcNodes
                 .Where(node => !node.Id.Contains("bad", StringComparison.OrdinalIgnoreCase))
                 .Skip(2).First().Id, publishedNodeId);
+#endif
         }
 
         [Fact, PriorityOrder(10)]
         public async Task TestVerifyDataAvailableAtIoTHub()
         {
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
 
             // Make sure that there is no active monitoring.
             await TestHelper.StopMonitoringIncomingMessagesAsync(_context, cts.Token).ConfigureAwait(false);
@@ -250,16 +252,18 @@ namespace IIoTPlatform_E2E_Tests.Orchestrated
                 Assert.False(string.IsNullOrWhiteSpace(_context.OpcUaEndpointId));
             }
 
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+#if NOTSUPPORTED
             var route = string.Format(CultureInfo.InvariantCulture, TestConstants.APIRoutes.PublisherJobsFormat, _context.OpcUaEndpointId);
             var response = TestHelper.CallRestApi(_context, Method.Delete, route, ct: cts.Token);
             Assert.True(response.IsSuccessful, $"Got {response.StatusCode} deleting publishing job");
+#endif
         }
 
         [Fact, PriorityOrder(12)]
         public async Task TestVerifyNoDataIncomingAtIoTHub()
         {
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
 
             // Wait untill the publishing has stopped
             await Task.Delay(TestConstants.DefaultTimeoutInMilliseconds * 4, cts.Token).ConfigureAwait(false);

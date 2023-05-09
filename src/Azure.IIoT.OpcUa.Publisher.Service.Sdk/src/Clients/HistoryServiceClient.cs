@@ -70,7 +70,7 @@ namespace Azure.IIoT.OpcUa.Publisher.Service.Sdk.Clients
         {
             var httpRequest = new HttpRequestMessage
             {
-                RequestUri = new Uri($"{_serviceUri}/history/healthz")
+                RequestUri = new Uri($"{_serviceUri}/healthz")
             };
             try
             {

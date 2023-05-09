@@ -107,9 +107,9 @@ namespace IIoTPlatform_E2E_Tests
             public const string RegistryEndpoints = "/registry/v2/endpoints";
 
             /// <summary>
-            /// Route to registry health endpoint
+            /// Route health endpoint
             /// </summary>
-            public const string RegistryHealth = "/registry/healthz";
+            public const string HealthZ = "/healthz";
 
             /// <summary>
             /// Route to publish single OPC UA node from OPC Publisher
@@ -120,31 +120,6 @@ namespace IIoTPlatform_E2E_Tests
             /// Route to start or stop publishing multiple OPC UA nodes from OPC Publisher
             /// </summary>
             public static string PublisherBulkFormat = "/publisher/v2/publish/{0}/bulk";
-
-            /// <summary>
-            /// Route to read all publishing jobs
-            /// </summary>
-            public static string PublisherJobs = "/publisher/v2/jobs";
-
-            /// <summary>
-            /// Route to read single publishing jobs
-            /// </summary>
-            public static string PublisherJobsFormat = "/publisher/v2/jobs/{0}";
-
-            /// <summary>
-            /// Route to publisher health endpoint
-            /// </summary>
-            public const string PublisherHealth = "/publisher/healthz";
-
-            /// <summary>
-            /// Route to twin health endpoint
-            /// </summary>
-            public const string TwinHealth = "/twin/healthz";
-
-            /// <summary>
-            /// Route to job orchestrator health endpoint
-            /// </summary>
-            public const string JobOrchestratorHealth = "/edge/publisher/healthz";
         }
 
         /// <summary>

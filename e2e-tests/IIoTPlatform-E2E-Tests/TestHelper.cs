@@ -630,10 +630,7 @@ namespace IIoTPlatform_E2E_Tests
             const string healthyState = "Healthy";
 
             var healthRoutes = new string[] {
-                TestConstants.APIRoutes.RegistryHealth,
-                TestConstants.APIRoutes.PublisherHealth,
-                TestConstants.APIRoutes.TwinHealth,
-                TestConstants.APIRoutes.JobOrchestratorHealth
+                TestConstants.APIRoutes.HealthZ
             };
 
             try
