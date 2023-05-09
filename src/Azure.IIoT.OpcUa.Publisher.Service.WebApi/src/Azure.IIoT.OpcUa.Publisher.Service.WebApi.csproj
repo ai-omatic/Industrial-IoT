@@ -29,7 +29,7 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.1.0-rc.2" />
     <PackageReference Include="Furly.Extensions.AspNetCore" Version="0.4.30" />
     <PackageReference Include="Furly.Extensions.MessagePack" Version="0.4.30" />
-    <PackageReference Include="Furly.Azure.KeyVault" Version="0.1.39" />
+    <PackageReference Include="Furly.Azure.KeyVault" Version="0.1.40" />
     <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
   </ItemGroup>
   <ItemGroup>

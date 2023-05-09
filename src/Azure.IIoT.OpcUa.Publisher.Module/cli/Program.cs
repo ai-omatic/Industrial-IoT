@@ -24,6 +24,7 @@ namespace Azure.IIoT.OpcUa.Publisher.Module.Runtime
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Furly;
 
     /// <summary>
     /// Publisher module host process

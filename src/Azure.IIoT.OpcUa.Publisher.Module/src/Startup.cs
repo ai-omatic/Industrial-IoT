@@ -19,6 +19,7 @@ namespace Azure.IIoT.OpcUa.Publisher.Module
     using OpenTelemetry.Metrics;
     using OpenTelemetry.Resources;
     using System;
+    using Furly;
 
     /// <summary>
     /// Webservice startup
@@ -58,6 +59,7 @@ namespace Azure.IIoT.OpcUa.Publisher.Module
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddLogging(options => options
+                .AddFilter(typeof(IAwaitable).Namespace, LogLevel.Warning)
                 .AddSimpleConsole(options =>
                 {
                     // options.SingleLine = true;

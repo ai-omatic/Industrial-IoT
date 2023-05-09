@@ -19,6 +19,8 @@ namespace Azure.IIoT.OpcUa.Publisher.Service.Services
         public int Priority => 1;
 
         /// <inheritdoc/>
+        public string ModuleName => "publisher";
+        /// <inheritdoc/>
         public string Id => "__default-opcpublisher";
 
         /// <inheritdoc/>
@@ -31,15 +33,23 @@ namespace Azure.IIoT.OpcUa.Publisher.Service.Services
         public string Image { get; }
         /// <inheritdoc/>
         public string? Tag { get; }
-
         /// <inheritdoc/>
         public VariantValue CreateOptions { get; }
+
         /// <inheritdoc/>
         public string? DockerServer { get; }
         /// <inheritdoc/>
         public string? DockerUser { get; }
         /// <inheritdoc/>
         public string? DockerPassword { get; }
+
+        /// <inheritdoc/>
+        public string? BaseDeploymentId => Constants.EntityTypeGateway;
+        /// <inheritdoc/>
+        public string? BaseTargetCondition =>
+            $"(tags.__type__ = '{Constants.EntityTypeGateway}' " +
+                "AND NOT IS_DEFINED(tags.unmanaged)) " +
+                "AND NOT IS_DEFINED(tags.use_1_1_LTS)";
 
         /// <summary>
         /// Create deployment
