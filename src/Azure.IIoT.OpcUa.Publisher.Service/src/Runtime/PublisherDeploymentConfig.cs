@@ -5,10 +5,10 @@
 
 namespace Azure.IIoT.OpcUa.Publisher.Service.Runtime
 {
-    using Microsoft.Extensions.Configuration;
-    using System.Reflection;
-    using System;
     using Furly.Extensions.Configuration;
+    using Microsoft.Extensions.Configuration;
+    using System;
+    using System.Reflection;
 
     /// <summary>
     /// Publisher deployment configuration

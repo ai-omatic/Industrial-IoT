@@ -9,8 +9,8 @@ namespace Azure.IIoT.OpcUa.Publisher.Service.WebApi
     using Azure.IIoT.OpcUa.Publisher.Service;
     using Azure.IIoT.OpcUa.Publisher.Service.Clients;
     using Azure.IIoT.OpcUa.Publisher.Service.Events;
-    using Azure.IIoT.OpcUa.Publisher.Service.Services;
     using Azure.IIoT.OpcUa.Publisher.Service.Runtime;
+    using Azure.IIoT.OpcUa.Publisher.Service.Services;
     using Azure.IIoT.OpcUa.Publisher.Sdk.Publisher.Clients;
     using Azure.IIoT.OpcUa.Encoders;
     using Autofac;

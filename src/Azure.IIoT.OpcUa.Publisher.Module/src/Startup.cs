@@ -6,9 +6,9 @@
 namespace Azure.IIoT.OpcUa.Publisher.Module
 {
     using Azure.IIoT.OpcUa.Publisher.Module.Runtime;
-    using Azure.IIoT.OpcUa.Publisher.Stack.Services;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Furly;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -19,7 +19,6 @@ namespace Azure.IIoT.OpcUa.Publisher.Module
     using OpenTelemetry.Metrics;
     using OpenTelemetry.Resources;
     using System;
-    using Furly;
 
     /// <summary>
     /// Webservice startup
