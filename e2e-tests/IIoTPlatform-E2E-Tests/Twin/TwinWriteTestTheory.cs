@@ -28,7 +28,7 @@ namespace IIoTPlatform_E2E_Tests.Twin
         [Fact, PriorityOrder(0)]
         public void WriteAttributes()
         {
-            var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
+            using var cts = new CancellationTokenSource(TestConstants.MaxTestTimeoutMilliseconds);
 
             // The attribute that will be overwritten
             const string attribute = "DisplayName";
